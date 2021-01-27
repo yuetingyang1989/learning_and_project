@@ -4,7 +4,7 @@ library(bkrdata)
 library(dplyr)
 
 ##-------------- 1. Load data ---------##
-d <- hive_query("SELECT * FROM training_performance_data", dsn = "hive-ams4")
+d <- hive_query("SELECT * FROM cs_learning.csp_training_method_agent_cpi", dsn = "hive-ams4")
 d$trainer_tenure_log <- log1p(d$trainer_tenure_training_in_days)
 d$trainer_tenure_prior_log <- log1p(d$trainer_tenure_prior_trainer_in_days)
 

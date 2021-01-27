@@ -4,7 +4,7 @@ library(bkrdata)
 library(dplyr)
 
 ##-------------- 1. Load data ---------##
-d <- hive_query("SELECT * FROM training_performance_data", dsn = "hive-ams4")
+d <- hive_query("SELECT * FROM yueyang.trainer_performance_emea", dsn = "hive-ams4")
 
 d$weekly_cpi_log <- log1p(d$weekly_cpi)
 
@@ -12,7 +12,7 @@ d$weekly_cpi_log <- log1p(d$weekly_cpi)
 #d$trainer <- as.factor(d$trainer)
 cols <- c("staff_id","trainer", "trainer_atrrition", "channel","trainer_site",
           "sitecode", "shift_hired_for", "executive_training_shift")
-d %>%
+d %<>%
   mutate_at(cols, funs(factor(.)))
 str(d)
 
