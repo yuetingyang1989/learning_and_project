@@ -1,0 +1,75 @@
+[MUSIC] In this and the next video,
+we will discuss, what are the ways to optimize
+classification metrics? In this video,
+we will discuss logloss and accuracy, and in the next one, AUC and
+quadratic-weighted kappa. Let's start with logloss, logloss for classification is like MSE for
+aggression, it is implemented everywhere. All we need to do is to find out what
+arguments should be passed to a library to make it use logloss for training. There are a huge number of libraries
+to try, like XGBoost, LightGBM, Logistic Regression, and [INAUDIBLE]
+classifier from sklearn, Vowpal Wabbit. All neural nets, by default,
+optimize logloss for classification. Random forest classifier predictions turn
+out to be quite bad in terms of logloss. But there is a way to make them better, we can calibrate the predictions
+to better fit logloss. We've mentioned several times that
+logloss requires model to output exterior probabilities,
+but what does it mean? It actually means that if we take all the
+points that have a score of, for example, 0.8, then there will be exactly four times
+more positive objects than negatives. That is, 80% of the points will be
+from class 1, and 20% from class 0. If the classifier doesn't
+directly optimize logloss, its predictions should be calibrated. Take a look at this plot, the blue line
+shows sorted by value predictions for the validation set. And the red line shows correspondent
+target values smoothed with rolling window. We clearly see that our predictions
+are kind of conservative. They´re much greater than two
+target mean on the left side, and much lower than they should
+be on the right side. So this classifier is not calibrated, and the green curve shows
+the predictions after calibration. But if we plot sorted predictions for calibrated classifier, the curve will
+be very similar to target rolling mean. And in fact, the calibrator
+predictions will have lower log loss. Now, there are several ways to
+calibrate predictions, for example, we can use so-called Platt scaling. Basically, we just need to fit a logistic
+regression to our predictions. I will not go into the details how to do
+that, but it's very similar to how we stack models, and we will discuss
+stacking in detail in a different video. Second, we can fit isotonic
+regression to our predictions, and again, it is done very similar
+to stacking, just another model. While finally, we can use stacking, so the idea is, we can fit any classifier. It doesn't need to optimize logloss,
+it just needs to be good, for example, in terms of AUC. And then we can fit another model on top that will take the predictions of our
+model, and calibrate them properly. And that model on top will use
+logloss as its optimization loss. So it will be optimizing indirectly,
+and its predictions will be calibrated. Logloss was the only metric that
+is easy to optimize directly. With accuracy, there is no easy
+recipe how to directly optimize it. In general, the recipe is following,
+actually, if it is a binary classification task, fit any metric, and
+tune with the binarization threshold. For multi-class tasks, fit any metric and tune parameters comparing
+the models by their accuracy score, not by the metric that the models
+were really optimizing. So this is kind of early stopping and the cross validation,
+where you look at the accuracy score. Just to get an intuition why accuracy is
+hard to optimize, let's look at this plot. So on the vertical axis we
+will show the loss, and the horizontal axis shows signed distance
+to the decision boundary, for example, to a hyper plane or for a linear model. The distance is considered to be positive
+if the class is predicted correctly. And negative if the object is located at
+the wrong side of the decision boundary. The blue line here shows zero-one loss, this is the loss that
+corresponds to accuracy score. We pay 1 if the object is misclassified,
+that is, the object has negative distance,
+and we pay nothing otherwise. The problem is that, this loss has
+zero almost everywhere gradient, with respect to the predictions. And most learning algorithms require
+a nonzero gradient to fit, otherwise it's not clear how we need to change the
+predictions such that loss is decreased. And so people came up with proxy losses that are upper bounds for
+these zero-one loss. So if you perfectly fit the proxy loss,
+the accuracy will be perfect too, but differently to zero-one loss,
+they are differentiable. For example, you see here logistic loss,
+the red curve used in logistic regression, and
+hinge loss, loss used in SVM. Now recall that to obtain hard labels for
+a test object, we usually take argmax of our soft predictions,
+picking the class with a maximum score. If our task is binary and
+soft predictions sum up to 1, argmax is equivalent
+to threshold function. Output 1 when the predictions for
+the class one is higher than 0.5, and output 0 when the prediction's lower. So we've already seen this example
+where threshold 0.5 is not optimal, so what can we do? We can tune the threshold we apply, we can do it with a simple grid
+search implemented with a for loop. Well, it means that we can basically
+fit any sufficiently powerful model. It will not matter much what loss exactly,
+say, hinge or log loss the model will optimize. All we want from our
+model's predictions is the existence of a good threshold
+that will separate the classes. Also, if our classifier
+is ideally calibrated, then it is really returning
+posterior probabilities. And for such a classifier,
+threshold 0.5 would be optimal, but such classifiers are rarely the case,
+and threshold tuning helps often. So in this video, we discussed logloss and accuracy, in the next video
+we will discuss AUC and quadratic weighted kappa. [MUSIC]

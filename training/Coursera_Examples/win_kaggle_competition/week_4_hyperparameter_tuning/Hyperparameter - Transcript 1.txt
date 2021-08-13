@@ -1,0 +1,83 @@
+[MUSIC] Hi, in this lecture, we will study
+hyperparameter optimization process and talk about hyperparameters in
+specific libraries and models. We will first discuss
+hyperparameter tuning in general. General pipeline, ways to tuning
+hyperparameters, and what it actually means to understand how a particular
+hyperparameter influences the model. It is actually what we will
+discuss in this video, and then we will talk about libraries and
+frameworks, and see how to tune hyperparameters
+of several types of models. Namely, we will first
+study tree-based models, gradient boosting decision trees and
+RandomForest. Then I'll review important
+hyperparameters in neural nets. And finally, we will talk about
+linear models, where to find them and how to tune them. Another class of interesting
+models is factorization machines. We will not discuss factorization
+machines in this lecture, but I suggest you to read
+about them on the internet. So, let's start with a general
+discussion of a model tuning process. What are the most important things to
+understand when tuning hyperparameters? First, there are tons of potential
+parameters to tune in every model. And so we need to realize which
+parameters are affect the model most. Of course,
+all the parameters are reliable, but we kind of need to select
+the most important ones. Anyway we never have time to tune
+all the params, that's right. So we need to come up with a nice
+subset of parameters to tune. Suppose we're new to xgboost and we're trying to find out what
+parameters will better to tune, and say we don't even understand how
+gradient boosting decision tree works. We always can search what parameters
+people usually set when using xgboost. It's quite easy to look up, right? For example, at GitHub or Kaggle Kernels. Finally, the documentation sometimes
+explicitly states which parameter to tune first. From the selected set of parameters
+we should then understand what would happen if we
+change one of the parameters? How the training process and the training
+invalidation course will change if we, for example,
+increased a certain parameter? And finally, actually tune
+the selected parameters, right? Most people do it manually. Just run, examine the logs,
+change parameters, run again and
+iterate till good parameters found. It is also possible to use
+hyperparameter optimization tools like hyperopt, but it's usually
+faster to do it manually to be true. So later in this video, actually discuss
+the most important parameters for some models along with some intuition how
+to tune those parameters of those models. But before we start, I actually want
+to give you a list of libraries that you can use for
+automatic hyperparameter tuning. There are lots of them actually, and
+I didn't try everything from this list myself, but from what I actually tried,
+I did not notice much difference in optimization speed on
+real tasks between the libraries. But if you have time,
+you can try every library and compare. From a user side these
+libraries are very easy to use. We need first to define the function
+that will run our module, in this case, it is XGBoost. That will run our module with
+the given set of parameters and return a resulting validation score. And second,
+we need to specify a source space. The range for the hyperparameters where
+we want to look for the solution. For example, here we see that a parameter,
+it is fix 0.1. And we think that optimal max depth
+is somewhere between 10 and 30. And actually that is it,
+we are ready to run hyperopt. It can take much time, so
+the best strategy is to run it overnight. And also please note that everything
+we need to know about hyperparameter's, in this case,
+is an adequate range for the search. That's pretty convenient,
+if you don't know the new model and you just try to run. But still,
+most people tuned the models manually. So, what exactly does it
+mean to understand how parameter influences the model? Broadly speaking, different values of parameters result
+in three different fitting behavior. First, a model can underfit. That is, it is so constrained that
+it cannot even learn the train set. Another possibility is that
+the model is so powerful that it just overfits to the train set and
+is not able to generalize it all. And finally, the third behavior is something
+that we are actually looking for. It's somewhere between underfitting and
+overfitting. So basically, what we should examine
+while turning parameters is that we should try to understand if the model
+is currently underfitting or overfitting. And then, we should somehow
+adjust the parameters to get closer to desired behavior. We need to kind of split all the
+parameters that we would like to tune into two groups. In the first group, we'll have
+the parameters that constrain the model. So if we increase
+the parameter from that group, the model would change its behaviour
+from overfitting to underfitting. The larger the value of the parameter,
+the heavier the constraint. In the following videos, we'll color such
+parameters in red, and the parameters in the second group are doing an opposite
+thing to our training process. The higher the value,
+more powerful the main module. And so by increasing such parameters, we can change fitting behavior
+from underfitting to overfitting. We will use green color for
+such parameters. So, in this video we'll be discussing some general aspects of
+hyperparameter organization. Most importantly,
+we've defined the color coding. If you did not understand
+what color stands for what, please watch a part of
+the video about it again. We'll use this color coding
+throughout the following videos. [MUSIC]

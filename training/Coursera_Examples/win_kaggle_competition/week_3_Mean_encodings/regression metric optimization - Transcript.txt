@@ -1,0 +1,100 @@
+[SOUND] So
+far we've discussed different metrics, their definitions, and intuition for them. We've studied the difference between
+optimization loss and target metric. In this video, we'll see how we can
+efficiently optimize metrics used for regression problems. We've discussed,
+we always can use earl stopping. So I won't mention it for ever metrics. But keep it in mind. Let's start with mean squared error. It's the most commonly used metric for
+regression tasks. So we should expect it
+to be easy to work with. In fact, almost every modelling software
+will implement MSE as a loss function. So all you need to do to optimize it is
+to turn this on in your favorite library. And here are some of the library that
+support mean square error optimization. Both XGBoost and
+LightGBM will do it easily. A RandomForestRegresor from a scaler and
+also can split based on MSE, thus optimizing individually. A lot of linear models
+implemented in siclicar, and most of them are designed to optimize MSE. For example, ordinarily squares,
+reach regression, regression and so on. There's also SGRegressor class and
+Sklearn. It also implements a linear model but differently to other
+linear models in Sklearn. It uses [INAUDIBLE] gradient decent
+to train it, and thus very versatile. Well and of course MSE was built in. The library for
+online learning of linear models, also accepts MSC as lost function. But every neural net package like PyTorch,
+Keras, Flow, has MSE loss implemented. You just need to find an example
+on GitHub or wherever, and see what name MSE loss has
+in that particular library. For example,
+it is sometimes called L two loss, as L to distance in Matt Luke's using. But basically for all the metrics
+we consider in this lesson, you may find plaintal flames
+since they were used and discovered independently
+in different communities. Now, what about mean absolute error. MAE is popular too, so it is easy to
+find a model that will optimize it. Unfortunately, the extra boost
+cannot optimize MAE because MAE has zero as a second
+derivative while LightGBM can. So you still can use gradient boosting
+decision trees to this metric. MAE criteria was implemented for
+RandomForestRegressor from Sklearn. But note that running time will be
+quite high compared with MSE Corte. Unfortunately, linear models
+from SKLearn including SG Regressor can not
+optimize MAE negatively. But, there is a loss called Huber Loss,
+it is implemented in some of the models. Basically, it is very similar to MAE,
+especially when the errors are large. We will discuss it in the next slide. In [INAUDIBLE], MAE loss is implemented, but under a different name
+that's called quantile loss. In fact, MAE is just a special
+case of quantile loss. Although I will not go into the details
+here, but just recall that MAE is somehow connected to median values and
+median is a particular quantile. What about neural networks? As we've discussed MAE is not
+differentiable only when the predictions are equal to target. And it is of a rare case. That is why we may use any model
+train to put to optimize MAE. It may be that you will not find MAE
+implemented in a neural library, but it is very easy to implement it. In fact, all the models need is a loss function gradient
+with respect to predictions. And in this case,
+this is just a set function. Different names you may encounter for
+MAE is, L1 that fit and a one loss, and sometimes people
+refer to that special case of quintile regression as
+to median regression. A lot, a lot of,
+a lot of ways to make MAE smooth. You can actually make up your own smooth
+function that have upload that loops like MAE error. The most famous one is Huber loss. It's basically a mix between MSE and MAE. MSE is computed when the error is small,
+so we can safely approach zero error. And MAE is computed for
+large errors given robustness. So, to this end, we discuss the libraries
+that can optimize mean square error and mean absolute error. Now, let's get to not ask
+common relative metrics. MSPE and MAPE. It's much harder to find the model
+which can optimize them out of the box. Of course we can always can use,
+either, of course we can always either implement a custom loss for
+an integer boost or a neural net. It is really easy to do there. Or we can optimize different metric and
+do early stopping. But there are several specific
+approaches that I want to mention. This approach is based on the fact that
+MSP is a weighted version of MSE and MAP is a weighted version of MAE. On the right side,
+we've sen expression for MSP and MAP. The summon denominator just
+ensures that the weights are summed up to 1, but it's not required. Intuitively, the sample weights are
+indicating how important the object is for us while training the model. The smaller the target,
+is the more important the object. So, how do we use this knowledge? In fact,
+many libraries accept sample weights. Say we want to optimize MSP. So if we can set sample weights to
+the ones from the previous slide, we can use MSE laws with it. And, the model will actually
+optimize desired MSPE loss. Although most important libraries like
+XGBoost, LightGBM, most neural net packages support sample weighting,
+not every library implements it. But there is another method which works
+whenever a library can optimize MSE or MAE. Nothing else is needed. All we need to do is to create a new
+training set by sampling it from the original set that we have and
+fit a model with, for example, I'm a secretarian if you
+want to optimize MSPE. It is important to set
+the probabilities for each object to be sampled to
+the weights we've calculated. The size of the new data set is up to you. You can sample for example, twice as many
+objects as it was in original train set. And note that we do not need to
+do anything with the test set. It stays as is. I would also advise you to
+re-sample train set several times. Each time fitting a model. And then average models predictions,
+if we'll get the score much better and more stable. The results will,
+another way we can optimize MSPE, this approach was widely used during
+Rossmund Competition on Kagle. It can be proved that if
+the errors are small, we can optimize the predictions
+in logarithmic scale. Where it is similar to what we will
+do on the next slide actually. We will not go into details but you can find a link to explanation
+in the reading materials. And finally, let's get to the last
+regression metric we have to discuss. Root, mean, square, logarithmic error. It turns out quite easy to optimize,
+because of the connection with MSE loss. All we need to do is first to apply and
+transform to our target variables. In this case,
+logarithm of the target plus one. Let's denote the transformed target
+with a z variable right now. And then, we need to fit a model
+with MSE loss to transform target. To get a prediction for a test subject,
+we first obtain the prediction, z hat, in the logarithmic scale just by calling
+model.predict or something like that. And next, we do an inverse transform from
+logarithmic scale back to the original by expatiating z hat and
+subtracting one, and this is how we obtain the predictions
+y hat for the test set. In this video, we run through regression
+matrix and tools to optimize them. MSE and MAE are very common and
+implemented in many packages. RMSPE and MAPE can be optimized by
+either resampling the data set or setting proper sample weights. RMSLE is optimized by
+optimizing MSE in log space. In the next video,
+we will see optimization techniques for classification matrix. [MUSIC]

@@ -1,0 +1,78 @@
+[MUSIC] In previous video, we realized that
+mean encodings cannot be used as is and requires some kind of regularization
+on training part of data. Now, we'll carry out four different
+methods of regularization, namely, doing a cross-validation loop
+to construct mean encodings. Then, smoothing based on
+the size of category. Then, adding random noise. And finally, calculating expanding
+mean on some parametrization of data. We will go through all of
+these methods one by one. Let's start with CV loop regularization. It's a very intuitive and robust method. For a given data point, we don't want to
+use target variable of that data point. So we separate the data into
+K-node intersecting subsets, or in other words, folds. To get mean encoding value for
+some subset, we don't use data points from that subset and estimate
+the encoding only on the rest of subset. We iteratively walk through
+all the data subsets. Usually, four or five folds
+are enough to get decent results. You don't need to tune this number. It may seem that we have completely
+avoided leakage from target variable. Unfortunately, it's not true. It will become apparent if we perform
+leave one out scheme to separate the data. I'll return to it a little later, but first let's learn how to
+apply this method in practice. Suppose that our training
+data is in a DFTR data frame. We will add mean encoded features
+into another train new data frame. In the outer loop,
+we iterate through stratified K-fold iterator in order to separate
+training data into chunks. X_tr is used to estimate the encoding. X_val is used to apply
+estimating encoding. After that,
+we iterate through all the columns and map estimated encodings
+to X_val data frame. At the end of the outer loop we fill
+train new data frame with the result. Finally, some rare categories may
+be present only in a single fold. So we don't have the data to
+estimate target mean for them. That's why we end up with some nans. We can fill them with global mean. As you can see,
+the whole process is very simple. Now, let's return to
+the question of whether we leak information about
+target variable or not. Consider the following example. Here we want to encode Moscow
+via leave-one-out scheme. For the first row, we get 0.5,
+because there are two 1s and two 0s in the rest of rows. Similarly, for
+the second row we get 0.25 and so on. But look closely, all the resulting and
+the resulting features. It perfect splits the data,
+rows with feature mean equal or greater than 0.5 have target 0 and
+the rest of rows has target 1. We didn't explicitly use target variable,
+but our encoding is biased. Furthermore, this effect remains valid
+even for the KFold scheme, just milder. So is this type of regularization useless? Definitely not. In practice,
+if you have enough data and use four or five folds, the encodings will work
+fine with this regularization strategy. Just be careful and
+use correct validation. Another regularization
+method is smoothing. It's based on the following idea. If category is big,
+has a lot of data points, then we can trust this to [INAUDIBLE] encoding, but
+if category is rare it's the opposite. Formula on the slide uses this idea. It has hyper parameter alpha that
+controls the amount of regularization. When alpha is zero,
+we have no regularization, and when alpha approaches infinity
+everything turns into globalmean. In some sense alpha is equal to
+the category size we can trust. It's also possible to use some other
+formula, basically anything that punishes encoding software categories
+can be considered smoothing. Smoothing obviously won't
+work on its own but we can combine it with for
+example, CD loop regularization. Another way to regularize encodence is to
+add some noise without regularization. Meaning codings have better quality for the [INAUDIBLE] data than for
+the test data. And by adding noise, we simply degrade
+the quality of encoding on training data. This method is pretty unstable,
+it's hard to make it work. The main problem is the amount
+of noise we need to add. Too much noise will turn
+the feature into garbage, while too little noise
+means worse regularization. This method is usually used together
+with leave one out regularization. You need to diligently fine tune it. So, it's probably not the best option
+if you don't have a lot of time. The last regularization method I'm going
+to cover is based on expanding mean. The idea is very simple. We fix some sorting order of our data and use only rows from zero to n minus
+one to calculate encoding for row n. You can check simple implementation
+in the code snippet. Cumsum stores cumulative sum
+of target variable up to the given row and
+cumcnt stores cumulative count. This method introduces the least amount
+of leakage from target variable and it requires no hyper parameter tuning. The only downside is that
+feature quality is not uniform. But it's not a big deal. We can average models on encodings calculated from
+different data permutations. It's also worth noting that
+it is expanding mean method that is used in CatBoost grading,
+boosting to it's library, which proves to perform magnificently
+on data sets with categorical features. Okay, let's summarize what
+we've discussed in this video. We covered four different
+types of regularization. Each of them has its own advantages and
+disadvantages. Sometimes unintuitively we
+introduce target variable leakage. But in practice, we can bear with it. Personally, I recommend CV loop or
+expanding mean methods for practical tasks. They are the most robust and easy to tune. This is was regularization. In the next video, I will tell
+you about various extensions and practical applications of mean encodings. Thank you. [MUSIC]

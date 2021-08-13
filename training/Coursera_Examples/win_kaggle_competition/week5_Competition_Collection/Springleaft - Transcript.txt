@@ -1,0 +1,69 @@
+[MUSIC] Hi, throughout the course, we use
+the Springleaf competition as a useful example of EDA, mean encodings and
+features based on nearest neighbors. Back then, we took the third place in
+this competition together with and. And now in this video, I will describe
+the last part of our solution, which is the usage of stacking and
+ensembles. On this picture, you can see the final
+stacking scheme we produced on the level 0 features, on the first level,
+predictions by basic models. On the level one plus combination. So these predictions and
+some accurately chosen features on the second level models
+on this new set of features. And finally, on the third level,
+their linear combination. In this video, we will go through each level as it builds
+up to this non-trivial ensembled scheme. But first, let's quickly remind
+ourselves about the problem. This was a binary classification
+task with area under curve metric. We had 145,000 samples in training data
+and about 2,000 anonymized features. These were useful insights
+derived by us while doing EDA. And you can check out EDA done by earlier
+in our course to refresh your memory. So now let's start with features. Here we have four packs of features. First two are the basic dataset and
+the processed dataset. To keep it simple,
+we just used insights derived from EDA to clean data [INAUDIBLE] and
+to generate new features. For example,
+we remove duplicated features and edit some feature interaction based
+on scatter plots and correlations. Then, we mean-encoded all categorical
+features using growth relation loop and sign data and smoothing. We further used the mean-encoded dataset
+to calculate features based on nearest neighbors. Like, what is the least in
+closest object of the class zero? And how many objects out of ten
+nearest neighbors belong to class one? You can review how this could be done in related topics introduced
+by Dmitri Altihof. So finally, these four packs of
+feature were level 0 of our solution. And the second level was represented
+by several different gradient within decision tree models,
+and one neural network. The main idea here is that meta
+features should be diverse. Each meta feature should bring
+new information about the target. So we use both distinct parameters and
+different sets of features for our models. For the neural network, we additionally
+pre-processed features with common scalars, ranks and
+power transformation. The problem there was in huge outliers
+which skew network training results. So ranks and power transformation
+helped to handle this problem. After producing meta features who is
+gradual in boosting decision to it and neural networks, we calculated pay rise differences
+on them to help next level models. Note that this is also an interesting
+trick to force the model to utilize the differences in
+the first level models predictions. Here we edit two datasets of
+features based on nearest neighbors. One was taken directly from level 0 and
+they contain the same features. But it was calculated on the mean-encoded
+dataset to the power of one-half. The point here was that these features
+were not completely utilized by the first level models. And indeed, they brought new pieces
+of information to this level. Now we already have autofold
+predictions from the first level and we will train with the models on them. Because we could have target leakage
+here because of other folk, and also because features not very good and there are almost no patterns left
+in the data for models to discover. We chose simple classifiers, keeping in
+mind that predictions should be diverse. We used four different models. Gradient boosted decision tree,
+neural networks, random forest and logistic regression. So this is all with
+the second level models. And finally, we took a linear in your
+combination of the second level models. Because a linear model is not inclined
+to that we estimated coefficients directly using these four predictions and
+our target for throwing in data. So, this is it. We just went through each level of this
+stacking scheme and then the student. Why we need this kind of complexity? Well, usually it's because different
+models utilize different patterns in the data and we want to unite all
+of this patterns in one mighty model. And stacking can do exactly that for us. This may seem too complicated. Of course, it takes time to move up to
+this kind of scheme in a competition. But be sure that after
+completion our course, you already have enough
+knowledge about how to do this. These schemes never appear in the final
+shape at the beginning of the competition. Most work here usually is
+done on the first level. So you try to create diverse meta features
+and unite them in one simple model. Usually, you start to create the high
+grade second level of stacking, when you have only a few days left. And after that, you mostly work on
+the improvement of this scheme. That said, you already have
+the required knowledge and now you just need to get
+some practice out there. Be diligent, and without a doubt,
+you will succeed. [SOUND] [MUSIC]

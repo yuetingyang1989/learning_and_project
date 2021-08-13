@@ -1,0 +1,106 @@
+Hi, my name is Anna Veronika. And in this video,
+I will tell you about CatBoost, a great linguistic library that
+we are developing at Yandex. CatBoost is an open source project,
+so you are very welcome to use it. In this video, I will first tell
+you how CatBoost compares to other gradient boosting algorithms
+in terms of quality. Then we will go into
+details of the algorithm. We will discuss main problems that
+arise when using gradient boosting and the ways we try to solve
+these problems in CatBoost. After that we will talk about some
+useful features of the library and about the most important
+training parameters. Let's start with some motivation
+which I hope will make you want to try the library on your data. Here, you can see the comparison of
+CatBoost with other openly available great boosting libraries, LightGBM, XGBoost and
+H2O on several openly available data sets. These are data sets from computations and
+data set the commonly known data set. We've open sourced the code
+of algorithms comparison, so that you can reproduce results yourself. As you can see, CatBoost beats all other libraries in
+terms of quality on these data sets. These numbers are the results
+of comparison of the algorithms after parameter tuning. Actually, and you can see that in
+our benchmarks on GitHub, CatBoost, without any parameter tuning, beats the
+tuned algorithms in all cases except one where tuned LightGBM is slightly
+better than not tuned CatBoost. This is because CatBoost is very
+stable to hyper parameter changes. Now let me outline the main problems that
+can arise when using radian boosting. In CatBoost,
+we have put a lot of effort to solve them. The first problem is that the existing
+with gradient boosting libraries have not optimal support or no support for categorical features, a very natural
+type of data that arises in many tasks. To handle them,
+you need to do advanced processing. The second problem is that, if you train
+your model with default parameters, you usually get a very bad result. To get the good model,
+you need to do hyperparameter. The next problem arises in
+time critical applications and it is the prediction speed. If prediction speed is important, then some people don't use gradient
+boosting and use simple models. The next problem is overfitting. Gradient boosting is prone to overfitting, which affects the resulting
+quality of the model. And the last on this list
+is the training speed. It is especially important for
+large data sets when you need to wait for hours or even days for
+the training to finish. It is important to make
+training as fast as possible. Let's start with a discussion
+of categorical features. Because the sophisticated
+categorical feature support is a major advantage of the library. Gradient boosting is a machine learning
+technique that works great for heterogeneous data, or
+data from different sources. When working with heterogenous data,
+we usually have numerical data and categorical data. An example, if numerical data is height,
+it is a number. And thus, its values can be
+compared with each other. Numerical data can be easily
+used in decision trees. In practice, however, when data
+sets include categorical features, which are also important for predictions. Categorical feature is a feature
+having a discrete set of values that are not necessarily
+comparable with each other. An example for that could be user ID,
+or name of a city. The most commonly used practice for
+dealing with categorical features and gradient boosting is replacing
+them with some numerical features during the processing stage. Let me introduce the techniques
+that are used in CatBoost to deal with categorical features. The most widely used technique
+which is usually applied to low categorical features is One-hot encoding. The original feature is removed, and a new binary or
+variable is added for each category. By reading and boosting, component coding can be done during the
+pre possessing phase or during training. However, it can be implemented more
+efficiently in terms of training time, which we've done in the library. By default,
+CatBoost uses one-hot encoding for features with small number
+of different values. This can be controlled with
+one_hot_max_size parameter. Another way that we've implemented
+is using number of appearances of category in the data
+set as a new feature. This is a simple but powerful technique. One more way to deal with categorical
+features is to compute some statistic using the label values of the object. And that is the most powerful technique
+in terms of resulting quality. The simplest way is to
+substitute the category with value on the whole train data set. This procedure leads to. For example, if there is a single object
+from the category in the whole training data set, then the new
+numerical feature value will be equal to the label value of this example. A straightforward way to overcome this
+problem is to partition the data set into two parts, and use one part to
+only calculate the statistics, and the second part to perform training. This reduces over fitting, but
+it also reduces the amount of data used to train the model and
+to calculate the statistics. CatBoost uses a more efficient strategy,
+which reduces overfitting and allows to use the whole data set for
+training. Namely, we perform a random
+permutation of the data set and for each object we can get [INAUDIBLE] value
+and more objects with the same category value placed before the given
+object in the permutation. It also helps to use other statistics,
+not only error target. One more trick is to use
+several permutations. However, a straightforward
+statistics computed for several permutations
+will lead to overfitting. To use several permutations, CatBoost
+train's several models simultaneously, each of which is trained on a separate
+permutation and uses this model for tree structure selection. Note that any combination of several
+categorical features could be considered as a new one. For example, assume that
+the task is music foundation and we have two categorical features,
+user ID and musical genre. Some user prefer say rock music. When we convert user ID and musical genre to numerical features,
+we lose this information. And a combination of two
+features solve this problems and gives a new powerful feature. However, the number of combinations
+grows exponentially with the number of categorical features in the data set, and it is not possible to consider
+all of them in the algorithm. When constructing a new split for the current tree, CatBoost considers
+combinations in a greedy way. Thus, it considers only
+some good combinations. CatBoost also generates combinations
+of numerical and categorical features. Let's now discuss the next major
+difference between CatBoost and other libraries. It is the kind trees CatBoost
+is using as base predictors, although libraries use
+different kind of trees. Builds trees node by node,
+eating them in a greedy fashion. This way, you can get a deep
+[INAUDIBLE] binary tree. Also builds but it builds them layer
+by layer and then prunes them. So they cannot get very deep. CatBoost uses symmetric trees. The trees where all nodes on the same
+layer contain the same split. These trees are more simple predictors
+which make the algorithm more stable to overfitting. They also make the algorithm more
+stable to hyperparameter changes, which means that training with default
+parameters will give a good model, and you can reduce the time spent
+on tuning hyperparameters. This type of trees also ask for
+a very fast model predictions. CatBoost model prediction is 30 to
+60 times faster than those of and extra boost in both single and
+multithread mode. Thus categorical data supports and usage of symmetric trees are two
+first major features of CatBoost. We'll talk about other
+features in the next video. [SOUND] [MUSIC]

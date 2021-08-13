@@ -1,0 +1,132 @@
+[MUSIC] In this video, we will talk about
+hyperparameter optimization for some tree based models. Nowadays, XGBoost and
+LightGBM became really gold standard. They are just awesome implementation
+of a very versatile gradient boosted decision trees model. There is also a CatBoost library it
+appeared exactly at the time when we were preparing this course, so CatBoost
+didn't have time to win people's hearts. But it looks very interesting and
+promising, so check it out. There is a very nice
+implementation of RandomForest and ExtraTrees models sklearn. These models are powerful, and
+can be used along with gradient boosting. And finally, there is a model
+called regularized Greedy Forest. It showed very nice results from several
+competitions, but its implementation is very slow and hard to use, but
+you can try it on small data sets. Okay, what important parameters do
+we have in XGBoost and LightGBM? The two libraries have similar parameters
+and we'll use names from XGBoost. And on the right half of the slide
+you will see somehow loosely corresponding parameter
+names from LightGBM. To understand the parameters,
+we better understand how XGBoost and LightGBM work at least a very high level. What these models do, these models
+build decision trees one after another gradually optimizing a given objective. And first there are many parameters
+that control the tree building process. Max_depth is the maximum depth of a tree. And of course, the deeper a tree can be
+grown the better it can fit a dataset. So increasing this parameter will lead
+to faster fitting to the train set. Depending on the task,
+the optimal depth can vary a lot, sometimes it is 2, sometimes it is 27. If you increase the depth and can not get
+the model to overfit, that is, the model is becoming better and better on the
+validation set as you increase the depth. It can be a sign that there are a lot
+of important interactions to extract from the data. So it's better to stop tuning and
+try to generate some features. I would recommend to start with
+a max_depth of about seven. Also remember that as
+you increase the depth, the learning will take a longer time. So do not set depth to
+a very higher values unless you are 100% sure you need it. In LightGBM,
+it is possible to control the number of leaves in the tree rather
+than the maximum depth. It is nice since a resulting
+tree can be very deep, but have small number of leaves and
+not over fit. Some simple parameter controls a fraction
+of objects to use when feeding a tree. It's a value between 0 and 1. One might think that it's better
+always use all the objects, right? But in practice,
+it turns out that it's not. Actually, if only a fraction of
+objects is used at every duration, then the model is less
+prone to overfitting. So using a fraction of objects, the model
+will fit slower on the train set, but at the same time it will probably generalize
+better than this over-fitted model. So, it works kind of as a regularization. Similarly, if we can consider only
+a fraction of features [INAUDIBLE] split, this is controlled by parameters
+colsample_bytree and colsample_bylevel. Once again, if the model is over fitting, you can try to lower
+down these parameters. There are also various regularization
+parameters, min_child_weight, lambda, alpha and others. The most important one
+is min_child_weight. If we increase it,
+the model will become more conservative. If we set it to 0,
+which is the minimum value for this parameter,
+the model will be less constrained. In my experience, it's one of the most important parameters
+to tune in XGBoost and LightGBM. Depending on the task,
+I find optimal values to be 0, 5, 15, 300, so do not hesitate to try a wide
+range of values, it depends on the data. To this end we were discussing
+hyperparameters that are used to build a tree. And next, there are two very important
+parameters that are tightly connected, eta and num_rounds. Eta is essentially a learning weight,
+like in gradient descent. And the num_round is the how many
+learning steps we want to perform or in other words how many
+tree's we want to build. With each iteration
+a new tree is built and added to the model with
+a learning rate eta. So in general,
+the higher the learning rate, the faster the model fits to the train set
+and probably it can lead to over fitting. And more steps model does,
+the better the model fits. But there are several caveats here. It happens that with a too high learning
+rate the model will not fit at all, it will just not converge. So first, we need to find out if we
+are using small enough learning rate. On the other hand,
+if the learning rate is too small, the model will learn nothing
+after a large number of rounds. But at the same time, small learning rate
+often leads to a better generalization. So it means that learning
+rate should be just right, so that the model generalize and
+doesn't take forever to train. The nice thing is that we can freeze
+eta to be reasonably small, say, 0.1 or 0.01, and then find how many rounds we
+should train the model til it over fits. We usually use early stopping for it. We monitor the validation loss and exit
+the training when loss starts to go up. Now when we found
+the right number of rounds, we can do a trick that
+usually improves the score. We multiply the number of
+steps by a factor of alpha and at the same time,
+we divide eta by the factor of alpha. For example, we double the number
+of steps and divide eta by 2. In this case, the learning will
+take twice longer in time, but the resulting model
+usually becomes better. It may happen that the valid parameters
+will need to be adjusted too, but usually it's okay to leave them as is. Finally, you may want to
+use random seed argument, many people recommend to
+fix seed before hand. I think it doesn't make too much
+sense to fix seed in XGBoost, as anyway every changed parameter will
+lead to completely different model. But I would use this
+parameter to verify that different random seeds do not
+change training results much. Say [INAUDIBLE] competition,
+one could jump 1,000 places up or down on the leaderboard just by training
+a model with different random seeds. If random seed doesn't
+affect model too much, good. In other case, I suggest you to think
+one more time if it's a good idea to participate in that competition as
+the results can be quite random. Or at least I suggest you to adjust
+validation scheme and account for the randomness. All right,
+we're finished with gradient boosting. Now let's get to RandomForest and
+ExtraTrees. In fact, ExtraTrees is just a more
+randomized version of RandomForest and has the same parameters. So I will say RandomForest
+meaning both of the models. RandomForest and ExtraBoost build trees,
+one tree after another. But, RandomForest builds each
+tree to be independent of others. It means that having a lot of trees
+doesn't lead to overfeeding for RandomForest as opposed
+to gradient boosting. In sklearn, the number of trees for random forest is controlled
+by N_estimators parameter. At the start, we may want to determine what number
+of trees is sufficient to have. That is, if we use more than that,
+the result will not change much, but the models will fit longer. I usually first set N_estimators
+to very small number, say 10, and see how long does it take
+to fit 10 trees on that data. If it is not too long then I set
+N_estimators to a huge value, say 300, but it actually depends. And feed the model. And then I plot how the validation
+error changed depending on a number of used trees. This plot usually looks like that. We have number of trees on the x-axis and
+the accuracy score on y-axis. We see here that about 50 trees
+already give reasonable score and we don't need to use more
+while tuning parameter. It's pretty reliable to use 50 trees. Before submitting to leaderboard, we can set N_estimators to
+a higher value just to be sure. You can find code for this plot,
+actually, in the reading materials. Similarly to XGBoost, there is a parameter max_depth
+that controls depth of the trees. But differently to XGBoost, it can be set to none,
+which corresponds to unlimited depth. It can be very useful actually when
+the features in the data set have repeated values and important interactions. In other cases, the model with unconstrained
+depth will over fit immediately. I recommend you to start with a depth
+of about 7 for random forest. Usually an optimal depth for
+random forests is higher than for gradient boosting, so do not hesitate
+to try a depth 10, 20, and higher. Max_features is similar to call
+sample parameter from XGBoost. The more features I use to decipher
+a split, the faster the training. But on the other hand,
+you don't want to use too few features. And min_samples_leaf is
+a regularization parameter similar to min_child_weight from XGBoost and
+the same as min_data_leaf from LightGPM. For Random Forest classifier,
+we can select a criterion to eleviate a split in the tree with
+a criterion parameter. It can be either Gini or Entropy. To choose one, we should just try both and
+pick the best performing one. In my experience Gini is better more
+often, but sometimes Entropy wins. We can also fix random seed using
+random_state parameter, if we want. And finally, do not forget to set n_jobs
+parameter to a number of cores you have. As by default, RandomForest from sklearn
+uses only one core for some reason. So in this video, we were talking
+about various hyperparameters of gradient boost and
+decision trees, and random forest. In the following video, we'll discuss neural networks and linear models. [MUSIC]

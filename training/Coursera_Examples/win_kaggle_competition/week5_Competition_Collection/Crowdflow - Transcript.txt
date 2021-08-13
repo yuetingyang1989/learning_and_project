@@ -1,0 +1,128 @@
+[MUSIC] Hello everyone. In this video we will analyze
+the Crowdflower competition. We, I mean me, Stanislav Semenov and
+Dmitry Altukhov participated as a team and took second place. I will explain most important parts of
+our solution along with some details. The outline of the video is as follows. First, I will tell you about the contest
+itself, what kind of data and metrics were provided. After that we will discuss are approach,
+features and tricks. And then I will summarize what is worth
+to kind of look for on the competition. Some of the competition were
+organized by CrowdFlower Company. The goal of this competition is to measure
+relevance of the search results given the queries and resulting product
+descriptions from living e-commerce sites. The task is to evaluate the accuracy
+of their search algorithms. The challenge of the competition is
+to predict the relevance score of a given query and problem description. On the picture we see assessor's
+user interface, which has a query, a search query, and
+some information about an item. Assessors were asked to give each
+query-product pairing a score of 1, 2, 3, or 4, with 4 indicating the item
+completely satisfied the search query, and 1 indicating the item doesn't match. As the training data, we have only
+median and variance of these scores. Data set consists of three text fields,
+request query, result and products title,
+and product description, and two columns related to the target,
+median and variance of scores. To ensure that the algorithm is robust
+enough to handle any HTML snippets in the real world, the data provided in
+the program description field is raw and sometimes contain permissions
+that is relevant to the product. For example,
+a string of text or object IDs. To discourage hand-labeling, the actual
+set was augmented with extra data. This additional data was
+ignored to when the public and private leaderboard
+scores were calculated. And of course, campaign scores have
+no idea which objects we had already used to calculate the scores. So we have 10,000 samples in train, and
+20,000 in test, but it's good data. I mean, validation works well and local scores are close enough
+to leaderboard scores. Effective solutions, non-standard metric
+was used, quadratic weighted kappa. Let's take a closer look at it. You can find a detailed description of the
+metric on the competition evaluation page. We have already discussed the metric
+in our course, but let me recall it. Submissions are scored based on the
+quadratic weighted kappa which measures the agreement between two ratings. This metric typically will rise from 0,
+random agreement between raters, to 1, complete agreement between raters. In case there is less agreement between
+the raters than expected by random, the metric may go below 0. In order to understand the metric, let's consider an example
+of how to calculate it. First, we need N by n confusion matrix C,
+which constructed and normalized. Our vertical axis by its failures,
+or horizontal predicted failures. In our case, N is equal to 4 as
+the number of possible ratings. Second we need N by n histogram
+matrix of expected matrix E, which is calculated assuming that there
+is no correlation between ratings cost. This is calculated as within
+histogram vectors of ratings. Also we need N by N matrix of weights, W, which is calculated based
+on its elements positions. This particular formula for weights uses
+square distance between indexes i and j, so this is why the method is
+called quadratic weighted kappa. Finally, kappa can be calculated as one
+minus a fraction of this weighted sum of confusion matrix in the numerator, and weighted sum of expectation
+matrix in the denominator. I want to notice that kappa has properties
+similar both to classification loss and regression loss. The more distant predicted and true ratings are,
+the more penalties there will be. Remember that thing,
+we will use it later in our video. Okay, let's now talk
+about my team solution. It's turned out to be quite complex,
+consisting of several parts. Like extending of queries, per-query
+models, bumper features, and so on. I will tell you about main points. So let's start with text features. We have three text fields, a query,
+a title, and a description. You can apply all techniques that
+we discuss in our course and calculate various measures of similarity. That's exactly what we did. That is for query title and query
+description pair, we calculated the number of magic words, cosine distance
+between TF-IDF representations, distance between the average word2vec
+vectors, and Levensthein distance. In fact, this is a standard set of
+features that should be used for similar task. And there is nothing outstanding. The support should be
+considered as a baseline. And now we turn to the interesting things. In addition, we found it was
+useful to use symbolic n-grams. You can work with them in
+the same way as with word-based, if each letter is interpreted
+as a separate word. We use symbolic n-grams from one letter,
+to five letters. After getting a large parse metrics of
+n-grams, we apply it as to them, and took only close to 300
+combinations as features. You remember we discussed this portion
+of our course, there is an example. Looking at the data we notice
+three interesting properties. Queries are very short,
+numbers of unique queries is 261, and queries are the same in train and
+test sets. We decided to use these observations
+to build extended versions of query as follows. For each query, we get the most
+relevant corresponding items, those with relevance equal to four. We join all words from the title
+of the relevant items and take ten most popular words. This is what we called extended query and it's used to build all these text
+features that I mentioned earlier. Notice that this trick is applicable
+only within the context framework. Due to the fact that queries in test
+are exactly the same as in train. In real life we couldn't do so because it's unrealistic to ignore
+relevant results for every search query. The fact that sets of queries in train and
+test are the same, give us an opportunity to split our
+problem into many small subtasks. Specifically, for each query,
+you can build a separate model that will only predict relevance
+of corresponding items. Again, in real life, such tricks can't be
+applied, but within the context framework, it's totally fine. So, for each unique query,
+we get corresponding samples, calculate work to work similarities,
+back and forth presentation, and fit a random fourth classifier. Finally, we have 261 model
+which predictions were used as a feature in final example. Do remember that every product
+item is by several people. Median in a variance of the ratings. The variance show in ratings
+are inconsistent or not. Intuitively, if the variance is large, then such an object need to be taken
+into account with a smaller weight. One way to do it is to assign items
+weight depending on query answers, which was a heuristics 1 /
+1 + variance as the weight. Another method is to restore
+individual observation using median and variance statistics. We found that supposing
+there are three assessors, we can almost always certainly
+restore our original labels. For example,
+if we have a median equal to three, and variance equal to 0.66,
+there of course are two, three, and four, which by this approach and for
+each source sample, generated three once. However, using them as training
+data took longer to train, and did not improve the score. And simple heuristic works quite well,
+and they use it in final solution. In the competition, you need to choose
+a metric, we need to predict class, but penalty for
+the error is not symmetric. We decided to take it into account, adding several artificially created binary
+delimiters between classes as features. In other words, we're trying to
+classify to answer the question, is it true that target class number is
+greater than 1, greater than 2, and so on. We call these features bumpers, since they
+are kind of separators between classes. We build them in fashion, similar to
+how we construct predictions instead. It was very useful for the final solution. All mentioned features will
+be used in an ensemble. We build several models on
+different subsets of features. Some feel relatively simple like SVM and
+some look quite complex. You can see the part of
+complex model created by me. It uses bumper features,
+all sorts of similarities and query features in different combinations. Also there is a lot of frostage models, which are mixed up with
+second stage random forest. In fact, each participant of the team
+made his own model, and then for competition we simply mixed our
+model linearly for final submission. Let's remember that the metric on the one
+hand has some proper classification It's necessary to predict the class. But for regression answer,
+we can analyze more. We have built models for regression, but we have had to somehow turn
+real-valued predictions into classes. A simple approach with would work poorly,
+so we decided to pick up thresholds. For the purpose, we were right. Thresholds and choose the best one
+weighted on cross-validation score. The buff procedure gave us a very
+significant increase in quality. in fact it often happens in competitions
+with non-standard metrics that [INAUDIBLE] grades symmetric optimization
+gives a significant improvement. So let's sum up. In the competition it was really
+important to use the [INAUDIBLE] ideas. First symbolic and grams, once since
+they give a significant increase in the score and it was not solved
+that you should use that. Second, expansion of queries led to
+significant increase in this course. Also optimization of thresholds was
+a crucial part of our solution. I hope you will re-use some of these
+tricks in your competitions, though. Thank you for the attention. [MUSIC]

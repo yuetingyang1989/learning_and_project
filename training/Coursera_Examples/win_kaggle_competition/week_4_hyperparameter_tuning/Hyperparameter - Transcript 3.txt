@@ -1,0 +1,136 @@
+[MUSIC] In this video we'll briefly discuss
+neural network libraries and then we'll see how to tune hyperparameters
+for neural networks and linear models. There are so many frameworks,
+Keras, TensorFlow, MxNet, PyTorch. The choice is really personal, all frameworks implement more than enough
+functionality for competition tasks. Keras is for sure the most popular in
+Kaggle and has very simple interface. It takes only several dozen lines
+to train a network using Keras. TensorFlow is extensively used
+by companies for production. And PyTorch is very popular in
+deep learning research community. I personally recommend
+you to try PyTorch and Keras as they are most transparent and
+easy to use frameworks. Now, how do you tune
+hyperparameters in a network? We'll now talk about only
+dense neural networks, that is the networks that consist
+only of fully connected layers. Say we start with a three
+layer neural network, what do we expect to happen if we
+increase the number of neurons per layer? The network now can learn more
+complex decision boundaries and so it will over fit faster. The same should happen when the number
+of layers are increased, but due to optimization problems,
+the learning can even stop to converge. But anyway, if you think your
+network is not powerful enough, you can try to add another layer and
+see what happens. My recommendation here is to
+start with something very simple, say 1 or 2 layer and 64 units per layer. Debug the code, make sure the training and
+[INAUDIBLE] losses go down. And then try to find a configuration that
+is able to overfit the training set, just as another sanity check. After it, it is time to tune
+something in the network. One of the crucial parts of neural
+network is selected optimization method. Broadly speaking, we can pick either
+vanilla stochastic gradient descent with momentum or
+one of modern adaptive methods like Adam, Adadelta, Adagrad and so on. On this slide,
+the adaptive methods are colored in green, as compared to SGD in red. I want to show here that adaptive
+methods do really allow you to fit the training set faster. But in my experience,
+they also lead to overfitting. Plain old stochastic gradient
+descent converges slower, but the trained network usually
+generalizes better. Adaptive methods are useful, but in the settings others in
+classification and regression. Now here is a question for you. Just keep the size. What should we expect when
+increasing a batch size with other hyperparameters fixed? In fact, it turns out that huge batch
+size leads to more overfitting. Say a batch of 500 objects
+is large in experience. I recommend to pick a value around 32 or
+64. Then if you see the network is
+still overfitting try to decrease the batch size. If it is underfitting, try to increase it. Know that is a the number
+of outbox is fixed, then a network with a batch
+size reduced by a factor of 2 gets updated twice more times
+compared to original network. So take this into consideration. Maybe you need to reduce the number of
+networks or at least somehow adjust it. The batch size also should not be too
+small, the gradient will be too noisy. Same as in gradient boosting,
+we need to set the proper learning rate. When the learning rate is too high,
+network will not converge and with too small a learning rate,
+the network will learn forever. The learning rate should be
+not too high and not too low. So the optimal learning rate
+depends on the other parameters. I usually start with a huge learning rate,
+say 0.1, and try to lower it down till I find one with which network converges
+and then I try to revise further. Interestingly, there is a connection
+between the batch size and the learning rate. It is theoretically grounded for
+a specific type of models, but people usually use it,
+well actually some people use it as a rule of thumb with neural networks. The connection is the following. If you increase the batch
+size by a factor of alpha, you can also increase the learning
+rate by the same factor. But remember that the larger batch size, the more your network is
+prone to overfitting. So you need a good regularization here. Sometime ago, people mostly use L2 and
+L1 regularization for weights. Nowadays, most people use
+dropout regularization. So whenever you see a network overfitting,
+try first to a dropout layer. You can override dropout probability and a
+place where you insert the dropout layer. Usually people add the dropout layer
+closer to the end of the network, but it's okay to add some dropout
+to every layer, it also works. Dropout helps network to find features
+that really matters, and what never worked for me is to have dropout as the very
+first layer, immediately after data layer. This way some information is lost
+completely at the very beginning of the network and
+we observe performance degradation. An interesting regularization
+technique that we used in the [UNKOWN] competition is
+static dropconnect, as we call it. So recall that, usually we have an input
+layer densely connected to, say 128 units. We will instead use a first
+hidden layer with a very huge number of units, say 4,096 units. This is a huge network for a usual
+competition and it will overfeed badly. But now to regularlize it,
+we'll at random drop 99% of connections between the input layer and
+the first hidden layer. We call it static dropconnect
+because originally in dropconnect, we need to drop random connections at
+every learning iterations while we fix connectivity pattern for the network
+for the whole learning process. So you see the point, we increase
+the number of hidden units, but the number of parameters in the first
+hidden layer remains small. Notice that anyway the weight matrix
+of the second layer becomes huge, but it turns out to be
+okay in the practice. This is very powerful regularizations. And more of the networks with
+different connectivity patterns makes much nicer than networks
+without static dropconnect. All right, last class of models
+to discuss are my neuro models. Yet, a carefully tuned live GPM would
+probably beat support vector machines, even on a large, sparse data set. SVM's do not require almost any tuning,
+which is truly beneficial. SVM's for classification and regression
+are implemented in SK learners or wrappers to algorithms from libraries
+called libLinear and libSVM. The latest version of libLinear and
+libSVM support multicore competitions, but unfortunately it is not possible
+to use multicore version in Sklearn, so we need to compile these libraries
+manually to use this option. And I've never had anyone
+use kernel SVC lately, so in this video we will
+talk only about linear SVM. In Sklearn we can also find logistic and
+linear regression with various regularization options and also,
+as your declassifier and regressor. We've already mentioned them
+while discussing metrics. For the data sets that do not fit in
+the memory, we can use Vowpal Wabbit. It implements learning of linear
+models in online fashion. It only reads data row by row
+directly from the hard drive and never loads the whole
+data set in the memory. Thus, allowing to learn
+on a very huge data sets. A method of online learning for linear
+models called flow the regularized leader or FTRL in short was particularly
+popular some time ago. It is implemented in Vowpal Wabbit but there are also lots of
+implementations in pure Python. The hyperparameters we usually need
+to tune linear models are L2 and L1 regularization of weights. Once again, regularization is denoted
+with red color because of the higher the regularization weight is the more
+model struggle to learn something. But know that, the parameter see in
+SVM is inversely proportional to regularization weight, so
+the dynamics is opposite. In fact, we do not need to think about the
+meaning of the parameters in the case of one parameter, right? We just try several values and
+find one that works best. For SVM, I usually start a very small
+seed, say 10 to the power of minus 6 and then I try to increase it,
+multiply each time by a factor of 10. I start from small values because
+the larger the parameter C is, the longer the training takes. What type of regularization,
+L1 or L2 do you choose? Actually, my answer is try both. To my mind actually they are quite similar
+and one benefit that L1 can give us is weight sparsity, so the sparsity
+pattern can be used for feature selection. A general advise I want to give
+here do not spend too much time on tuning hyperparameters, especially
+when the competition has only begun. You cannot win a competition
+by tuning parameters. Appropriate features, hacks,
+leaks, and insights will give you much more than carefully
+tuned model built on default features. I also advice you to be patient. It was my personal mistake several times. I hated to spend more then ten minutes
+on training models and was amazed how much the models could improve if I
+would let it train for a longer time. And finally, average everything. When submitting, learn five models
+starting from different random initializations and
+average their predictions. It helps a lot actually and
+some people average not only random seed, but also other parameters
+around an optimal value. For example, if optimal depth for
+extra boost is 5, we can average 3 digiboosts with depth 3,
+4, and 5. Wow, it would be better if we could averaged 3 digiboosts with depth 4,
+5, and 6. Finally, in this lecture, we discussed what is a general pipeline
+for a hyperparameter optimization. And we saw, in particular,
+what important hyperparameters derive for several models,
+gradient boosting decision trees, random forests and extra trees,
+neural networks, and linear models. I hope you found something interesting
+in this lecture and see you later. [MUSIC]
