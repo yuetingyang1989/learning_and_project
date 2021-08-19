@@ -1,0 +1,229 @@
+Welcome back. In this video,
+I conduct an interview with Pasquale Lops on the topic of advanced
+content based filtering. As a class, we've looked at TFIDF. But we haven't really
+looked at some of the more advanced techniques that are beyond the
+scope of what we'll go into in detail, but are clearly highly important
+in recommender systems. So, first and foremost,
+I want to introduce Pasquale. He's an assistant professor
+of computer science at the University of Bari Aldo Moro. And he's an expert on recommender systems, with a focus on information filtering,
+content based techniques. And, particularly in hybrids, that bring
+together different forms of techniques from content based, from user profiles,
+collaborative as well. He's also well known in the field. He's organized a number of workshops
+on content based recommendation, and content based plus other
+types of recommendation. And it's just a privilege that we
+have him here to join our class. Welcome to the recommenders systems
+course on Coursera, Pasquale. >> Hi everyone, great to be here. >> So we were talking beforehand, and discussing the issues
+that led to this topic. And I think the place I'd like
+to start is this re-emergence of content based techniques. After the early excitement in the mid
+90s around collaborative filtering, got everybody really excited about,
+we're just going to use ratings, and then the Netflix prize came out. And everybody got really excited about
+stacking all of these mostly ratings-based techniques and matrix techniques on
+top of the correlational techniques. And somewhere in that, it felt like content based techniques
+fell out of favor for awhile. But, in the last few years,
+I'm seeing more and more research results. But also,
+industrial practice that seems to be grounded in understanding
+content-based filtering. And I was wondering if you
+could give us your thoughts on what happened to content-based. And why is it suddenly hot? >> Okay, so during the Netflix prize,
+there were several researchers who tried to face the challenge
+using a wide variety of techniques. Of course, we know that the best
+performing algorithms were those based on matrix factorization and
+more general latent factor models. But there were also some
+researchers who try to face the challenge using also
+content-based techniques. Indeed, most of them try to use
+metadata associated to items, and also to use it to try to
+obtain very good performance. But unfortunately, this was not the case. Indeed, there were this kind of technique,
+so it did not provide good results. At least in terms of the root means for
+development. >> Sure, so
+I understand you have some slides for us that might help us walk through this. >> Yeah, indeed, after the Netflix prize, there were some discussion about the
+usefulness of this kind of recommendation. And this is this post by Xavier Amatriain, on the uselessness of content for
+recommendations. And also in 2009, there was this paper published at the ECM Conference
+on Recommender System, with a quite provocative title, Recommending New Movies: Even a Few
+Ratings Are More Valuable Than Metadata. So it seems that content based recommender
+system were not able to face real world challenge such as real world scenarios,
+such as that of the Netflix prize. And along with this good,
+better form, it's a lot with the problems in finding available
+content to associate to item, leads to a decreasing interest
+in this kind of technology. But in my opinion,
+there are two main reasons for a renewed interest in
+this kind of technology. The first one is that we all use social
+media and social media really matters. And a relevant part of information which
+are spread in social media is content. So we could access the social media for
+extracting, for example, information about the people's feelings or
+opinions. And differently from some years ago,
+this kind of user generated content just contained
+valuable information as a. And it's a real content with a text,
+a lot of text with phrases, with users describing several aspects
+of a certain item, for example. Opinions on certain aspects related
+to hotel, restaurants, book, movies. And for this reason, a content-based
+recommendation strategy could rely on this valuable content extracted from social
+media to provide effective recommendation. While, the second aspect,
+the second main reason for this interest in content-based recommender
+system, is related to the explanation. We really need explanation. We really need the transparent
+recommender system. Of course using latent factor models does
+not allow to provide an explanation. But also, collaborative filtering provides us with some explanation
+which are not satisfactory. Indeed, we get some
+explanation of this type, customers who both desired
+these other items. But we don't really know
+who are these customers. So I remember a discussion
+that I had with a researcher at an Recommender System Conference. And he was an expert of matrix
+prioritization and latent factor models, and founded a company selling
+recommender system technologies. And he was asking me some information
+about the content based recommendation parity, how it worked out the best
+way of producing recommendation. But I was a bit surprised, and
+he said me, he told me that before explaining recommendation
+to final user, we have to explain recommendation to companies investing
+in recommender system technology. Since they really need to know why certain
+items are suggested to certain user. So to sum up, the two main reasons for
+this revival of recommender systems, is the need of explanation and the availability of huge quantity of
+content extracted from social media. >> So I guess part of what that's meant
+is that we've seen an increase in the quality, not just the quantity
+of data that's available. But the quality of techniques for
+using this content based data, the advances in natural language
+processing, and in content processing. So what are you seeing as
+the The algorithms and advances that are taking content-based
+filtering in recommenders, beyond its early stage of
+simple keyword profiles. >> Okay, before we given this sort of, you
+had to look to your video lectures about content-based recommenders, sustaining
+that previous Coursera course and of course you explaining
+the back to space model. The time frequency versus
+document frequency heuristics and how to extract the most
+important features from Textile description but
+in my opinion the real advancement in content based filtering does
+not regard the vector or the model used to represent
+height in some user profile. So we can still use this
+kind of technology but what we really need is a big comprehension
+of the information conveyed by text or content which is of course crucial to
+improve the quality of recommendation. So we have to go beyond the classical
+key word base representation and we have to introduce a semantic
+representation layer. Which allows to give me
+the classical problems of metalanguage such as the polysemy. A word with more than one meaning. If I have to analyze this tweak for
+the extracting for example my preference, I love turkey, which is turkey refer to,
+to the food or to the nation? Or if we rely on content-based
+techniques based on key words, and we are dependent on the language
+used to represent the items. But as much recommender systems should
+be able to provide or suggesting for example an interesting item, and use for example also in the language
+which is different from I use for creating my profile if I don't
+understand that language. Or we have to deal with the problem of
+entity recognition in this tweet for example, L'Aquila in Italy,
+in English is the eagle is dying. What does L'Aquila refer to,
+to the animal or to the entity which is the name of the Italian city where in
+2009 there was an awful earthquake. But in the [INAUDIBLE] how is it
+possible to introduce this semantic representation layer? And there are two main research lines. One is based on the inexplicit
+representation of the semantics which we
+explicitly provide the math between features describing the item or
+the real item. With concepts which are containing
+external knowledge sources. So we leverage white coverage
+knowledge sources such as Wikipedia which contains
+the description of entities or common sense concepts which are also
+available in several languages, or BabelNet which contains entities,
+common sense, but also lexical concepts available
+in several languages. Or we could use the DBpedia which is
+destruction version of Wikipedia. For example,
+if we rely on Wikipedia no leak source, we could apply some anti-leaking
+over reading which are able to provide some quite complex. Not trivial natural language processing
+pipeline, which are able to analyze real text and extract the most important
+concepts mentioned in the text. For example, if we start from this
+plot of the movie, The Matrix, the [INAUDIBLE] are able
+to extract common sense features such as science fiction film or
+simulated reality. Or named entities such as the director
+of the movie The Wachowskis or actors starring in the movies such as Keanu
+Reeves, Laurence Fishburne and so on. And the nice thing is that these are not
+just simple textual features but they are the reference to
+the corresponding Wikipedia page containing the description
+of that concept. And for this reason we deal
+with a quite complex feature, very understandable feature
+from transmissible features. The more we can also link this concept to the corresponding concept
+in another language. For example, in this case,
+in Italian using cross language leads. Similarly we rely, for example,
+on BabelNet, entity linking of leaving are able to annotate and
+to identify the common sense concepts and named entities which
+are contained in BabelNet. For example, we can access
+the science fiction definition and we can explore also other concepts
+which are linked into science fiction, and we have also the lexicaliation of
+those concepts in several languages. Or finally, we could decide, for
+example, to map the whole item, and not just the features in the textual
+description, to DBpedia. And we can extract this time,
+in a graph-based format, a lot of information in
+terms of properties, such as the fact that
+the director is the Wachowski. Or the music composer of The Matrix is
+done by this, or we could also introduce some interesting and also non-trivial
+features such as the fact that The Matrix has been shot in Australia or it's
+a movie, it's a film about rebellions. So the other research line is related
+to the use of implicit representations. So we do not rely on
+description of concepts containing external knowledge sources,
+anymore. But the meaning of words is
+determined by analyzing their usage, that is, their co-occurrence with other
+words, in very large corpora of documents. This is called distributional hypothesis
+which can be summarized in this way. The meaning is its use. So we can say, for example, that beer and
+wine have a very similar meeting. Since they frequently occur with
+the same words such as the glass or the bottle or the drink or
+party and so on. So starting from this term co-occurrence
+matrices we could leverage the so called word embedding techniques. Which are based on
+distributional hypothesis and are able to map words to low-dimensional
+vectors of real numbers and this is the semantic
+representation of that word. There are several methods
+to generate this mapping. As some methods are well-known literature. For example one is
+a Latent Semantic Indexing, which is able to reduce the dimensionality
+of the term co-occurrence matrix using, for example,
+the single R value decomposition. Or we could use the random indexing
+technique which uses random projection as a dimensionality reduction techniques
+on the term co-occurrence matrix. Differently from single [INAUDIBLE], Random Projection does not need to
+factorize the term co-occurrence matrix. So is a more scalable than has to be for
+very large matrixes. Or finally we could use
+some other techniques which are very widespread in this period. Which is the word to back technique is not
+dimensional to the deduction technique. But word to back is able
+to directly learn word of low-dimensional vector
+of real number using a neural network,
+a two layer neural network. >> Wow,
+a lot of interesting techniques out there. What are you seeing as
+the result of all of this? >> Yeah, we could say the accuracy of this technique when compared to the
+classical recommender system baselines. We could say that we have
+the availability of very rich representation as I have shown
+before in the previous slide. And the first advantage
+is that we could overcome the classical limited content analysis
+of content based recommender system. >> For example,
+we could use linking algorithms to extract very important and interesting
+features from textual description. And for this reason,
+we have a way to provide a deep analysis of the content
+associated to high tense. >> But we could also rely on
+this very rich representations, also to provide the better explanations. Indeed, if we rely on concepts
+such as of the representation of content in terms of a concepts
+such as Wikipedia pages or concepts containing. We are dealing with very comprehensible
+concepts which would be used for our explanation. For example we have used and
+we have fulfilled a system to provide explanation using properties
+extracted from Wikipedia. >> It's our work at
+the next LEXUS conference. And we could also exploit this
+very rich representation of items, which could be also farther in
+reach than using related concepts. For example, we could enrich our
+Wikipedia based representation by taking into account, for example,
+that Wikipedia categories. And this could also foster, for example, some unexpectedness and
+some serendipitous recommendation. That we know that common recommender
+systems are over specialized. In the sense that if we just rely on
+a keyword-based matching between items and the user profile,
+we obtain quite obvious recommendation. We obtain the same
+recommendation while we are also interested in recommender system which
+lead towards a discovery of new items. And in my opinion,
+this kind of semantic technologies could foster more serendipitous
+recommender system. And of course this could be
+more satisfactory for users. >> So
+sounds like it's got tremendous potential. I wonder about the domains
+that would be highest pay off. When I hear what you're saying, I think if
+I were trying to build a recommender for instance for medical procedures. I might really want semantics where
+I understood that I had a strong preference to have a low risk of infection
+or not much scarring or low pain. Where somebody else might be more
+concerned about the rate of recurrence. But when we talk about consumer products,
+movies and books, the question of how to balance
+collaborative and content base. It still seems like a very
+big open research question. Yeah, you are right, we have performed
+several experiments on several scenarios. For example, for movie recommendation, book recommendation, and
+also music recommendation. And of course,
+the content is important, but what we have to do is to provide some
+other experiments in some other scenarios. And for example,
+if we analyze what is happening in some cognitive system such as Watson,
+the system provided by IBM. They rely on the deep analysis
+of content you have mentioned. The medical domain, I agree with you. It might be very interesting to
+try this kind of techniques where a lot of information is
+available as a textbook content. And also besides the classical
+recommendations scenario that we used in our experiments. >> Wonderful, thank you for giving us this introduction to advanced
+techniques in content based filtering. Again, we've been with talking
+with Pasquale Lopes and are delighted that you're able to join us.
